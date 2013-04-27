@@ -15,7 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys,urllib2, urllib,getopt
+import sys,urllib2, urllib,getopt,os
+from subprocess import Popen, PIPE, STDOUT
 from HTMLParser import HTMLParser
 
 class LipsumParser(HTMLParser):
@@ -87,8 +88,15 @@ or paragraphs (p, para, paras, paragraphs) e.g. 5 words"""
 	parser = LipsumParser()
 	parser.feed(page)
 
+	text = ''
 	for d in parser.data:
-		print d
+		#print d
+		text += d + '\r\n'
 
+	if os.name == 'posix':
+		p = Popen('pbcopy', stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+		result = p.communicate(input=text)
+	else:
+		print result
 if __name__ == "__main__":
     main(sys.argv[1:])
