@@ -66,7 +66,7 @@ or paragraphs (p, para, paras, paragraphs) e.g. 5 words"""
 	if is_int(argv[0]):
 		amount = argv[0]
 
-	if argv[1] in ['p', 'para', 'paras', 'paragraphs']:
+	if argv[1] in ['p', 'para', 'paras', 'paragraph', 'paragraphs']:
 		what = 'paras'
 	elif argv[1] in ['w', 'word', 'words']:
 		what = 'words'
