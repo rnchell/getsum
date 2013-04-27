@@ -15,9 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys,urllib2, urllib,getopt,os
+import sys,urllib2, urllib,getopt,os,argparse
 from subprocess import Popen, PIPE, STDOUT
 from HTMLParser import HTMLParser
+
+parser = None
+amount = ''
+format = ''
 
 class LipsumParser(HTMLParser):
 	def __init__(self):
@@ -43,7 +47,7 @@ class LipsumParser(HTMLParser):
 		self.data.append(data.strip())
 
 def usage():
-	return
+	parser.print_help()
 
 def is_int(s):
 	try: 
@@ -52,30 +56,46 @@ def is_int(s):
 	except ValueError:
 	  return False
 
-def main(argv):
-	amount = ''
-	what = ''
+def args_init():
+	global parser
 
-	if len(argv) != 2:
-		print """>>> Error: not enough arguments provided. 
-Must specify amount of words/paragraphs and what - words (w, word, words) 
-or paragraphs (p, para, paras, paragraphs) e.g. 5 words"""
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-f', '--format',help='Format - words or paragraphs.')
+	parser.add_argument('-a', '--amount',help='Amount of words or paragraphs.')
 
+def parse_args():
+	global amount,format
+
+	args = parser.parse_args()
+
+	if not args.format or not args.amount:
+		usage()
 		return
 
-	if is_int(argv[0]):
-		amount = argv[0]
+	if is_int(args.amount):
+		amount = args.amount
+	else:
+		usage()
+		return
 
-	if argv[1] in ['p', 'para', 'paras', 'paragraph', 'paragraphs']:
-		what = 'paras'
-	elif argv[1] in ['w', 'word', 'words']:
-		what = 'words'
+	if args.format in ['p','para','paras','paragraph','paragraphs']:
+		format = 'paras'
+	elif args.format in ['w','word','words']:
+		format = 'words'
+	else:
+		usage()
+
+def main(argv):
+	global format,amount
+
+	args_init()
+	parse_args()
 
 	url = 'http://www.lipsum.com/feed/html'
 
 	values = {
 		'amount':amount,
-		'what':what,
+		'what':format,
 		'start':'yes',
 		'generate':'Generate Lorem Ipsum'
 	}
@@ -94,7 +114,7 @@ or paragraphs (p, para, paras, paragraphs) e.g. 5 words"""
 
 	if os.name == 'posix':
 		p = Popen('pbcopy', stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-		result = p.communicate(input=text)
+		result = p.communicate(input=ipsum)
 	else:
 		print ipsum
 
