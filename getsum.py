@@ -88,15 +88,16 @@ or paragraphs (p, para, paras, paragraphs) e.g. 5 words"""
 	parser = LipsumParser()
 	parser.feed(page)
 
-	text = ''
+	ipsum = ''
 	for d in parser.data:
-		#print d
-		text += d + '\r\n'
+		ipsum += d + '\r\n'
 
 	if os.name == 'posix':
 		p = Popen('pbcopy', stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 		result = p.communicate(input=text)
 	else:
-		print result
+		print ipsum
+
+
 if __name__ == "__main__":
     main(sys.argv[1:])
