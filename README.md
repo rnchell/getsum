@@ -9,4 +9,4 @@ For help:
 
 - python getsum.py -h
 
-Automatically copies to clipboard (Mac)
+Automatically copies to clipboard (Mac) unless -e/--echo command is specified
