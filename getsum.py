@@ -22,6 +22,7 @@ from HTMLParser import HTMLParser
 parser = None
 amount = ''
 format = ''
+echo = False
 
 class LipsumParser(HTMLParser):
 	def __init__(self):
@@ -62,9 +63,10 @@ def args_init():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-f', '--format',help='Format - words or paragraphs.')
 	parser.add_argument('-a', '--amount',help='Amount of words or paragraphs.')
+	parser.add_argument('-e', '--echo',help='Output to stdout',action='store_true')
 
 def parse_args():
-	global amount,format
+	global amount,format,echo
 
 	args = parser.parse_args()
 
@@ -78,6 +80,10 @@ def parse_args():
 		usage()
 		return
 
+
+	if args.echo:
+		echo = True
+
 	if args.format in ['p','para','paras','paragraph','paragraphs']:
 		format = 'paras'
 	elif args.format in ['w','word','words']:
@@ -86,7 +92,7 @@ def parse_args():
 		usage()
 
 def main(argv):
-	global format,amount
+	global format,amount,echo
 
 	args_init()
 	parse_args()
@@ -112,7 +118,7 @@ def main(argv):
 	for d in parser.data:
 		ipsum += d + '\r\n'
 
-	if os.name == 'posix':
+	if os.name == 'posix' and not echo:
 		p = Popen('pbcopy', stdout=PIPE, stdin=PIPE, stderr=STDOUT)
 		result = p.communicate(input=ipsum)
 	else:
